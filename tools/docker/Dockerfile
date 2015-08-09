@@ -7,9 +7,17 @@ MAINTAINER Sven Dowideit <SvenDowideit@docker.com>
 
 RUN sed -i 's/archive.ubuntu.com/mirrors.163.com/g' /etc/apt/sources.list
 
-RUN apt-get update && apt-get install -y openssh-server
 RUN mkdir /var/run/sshd
-RUN echo 'root:screencast' | chpasswd
+
+RUN apt-get update && apt-get install -y \
+    fio \
+    # iperf3 \  E: Unable to locate package iperf3
+    # lmbench \ E: Unable to locate package lmbench
+    openssh-server \
+    stress
+
+COPY ../../yardstick/resources/files/yardstick_key.pub /root/.ssh/authorized_keys
+
 RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 
 # SSH login fix. Otherwise user is kicked off after login
